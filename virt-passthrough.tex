@@ -278,7 +278,7 @@ The virtualization demo for a new instruction set
 \item Access to PCI config/bar is always trapped to hypervisor
 \item Hypervisor access PCI device and propagate result to VM
 \end{itemize}
-\visible<2->{\item Cons: too many traps to hypervisor!}
+\visible<2->{\item Cons: too many \textbf{\textcolor{red}{traps}} to hypervisor!}
 \end{itemize}
 \begin{figure}
 \includegraphics[width=1.0\linewidth]{figures/plan_a.pdf}
@@ -290,8 +290,9 @@ The virtualization demo for a new instruction set
 \section{PCI Passthrough 2/4: Plan B}
 \begin{frame}
 \begin{itemize}
-\item The hypervisor maps PCI config/bars into VM address space via EPT
-\item The VM has direct mmio access to PCI config/bars to avoid \textbf{trap}
+\item Map all MMIO PCI BARs to VM address space via EPT
+\item Access to PCI config (and IO-based BAR) is trapped to hypervisor
+\item The VM has direct MMIO access to PCI BARs to avoid \textbf{trap}
 \visible<2->{\item Q1: DMA is based on HPA, NOT GPA!}
 \visible<3->{\item Q2: MSI-X IRQ is based on host CPU ID, NOT guest CPU ID!}
 \end{itemize}
@@ -307,8 +308,8 @@ The virtualization demo for a new instruction set
 \begin{frame}
 \frametitle{PCI Passthrough 3/4: Plan C}
 \begin{itemize}
-\item Map some PCI BARs (e.g., ring buffer base or doorbell) to VM address space
-\item Access to PCI config and MSI-X table is trapped to hypervisor
+\item Map only some PCI BARs (e.g., ring buffer base or doorbell) to VM address space
+\item Access to PCI config (and IO-based BAR) and MSI-X table is trapped to hypervisor
 \item Redirect IRQ from PCI device to VM via hypervisor
 \visible<2->{\item Q1: DMA is based on HPA, NOT GPA! (Device Isolation across VMs)}
 \end{itemize}
@@ -323,8 +324,8 @@ The virtualization demo for a new instruction set
 \begin{frame}
 \frametitle{PCI Passthrough 4/4: Plan D}
 \begin{itemize}
-\item Map some PCI BARs (e.g., ring buffer base or doorbell) to VM address space
-\visible<2->{\item Access to PCI config and MSI-X table is trapped to hypervisor}
+\item Map only some PCI BARs (e.g., ring buffer base or doorbell) to VM address space
+\visible<2->{\item Access to PCI config (and IO-based BAR) and MSI-X table is trapped to hypervisor}
 \visible<3->{\item Redirect DMA GPA to HPA via IOMMU}
 \visible<4->{\item Redirect IRQ from PCI device to VM via hypervisor/IOMMU}
 \end{itemize}
@@ -370,10 +371,10 @@ The virtualization demo for a new instruction set
 \frametitle{Take-Home Message}
 \begin{itemize}
 \item Virtualization is \textbf{trap and emulation} (explicitly by software or implicitly by hardware)
-\visible<2->{\item PCI Passthrough is \textbf{to reduce the cost a PCI device is accessed by VM}, via:}
+\visible<2->{\item PCI Passthrough is \textbf{to minimize the cost that VM accesses PCI device}, via:}
 \begin{itemize}
-\visible<2->{\item Map some PCI BARs (e.g., ring buffer base or doorbell) to VM address space}
-\visible<3->{\item Access to PCI config and MSI-X table is trapped to and emulated by hypervisor}
+\visible<2->{\item Map only some PCI BARs (e.g., ring buffer base or doorbell) to VM address space via EPT}
+\visible<3->{\item Access to PCI config (and IO-based BAR) and MSI-X table is trapped to and emulated by hypervisor}
 \visible<4->{\item Redirect DMA GPA to HPA via IOMMU}
 \visible<5->{\item Redirect IRQ from PCI device to VM via hypervisor/IOMMU}
 \end{itemize}
